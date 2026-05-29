@@ -83,6 +83,12 @@
         .border-gradient-ig:hover::before {
             opacity: 1;
         }
+
+        /* Agar icon kalender di input date warnanya putih (Dark Mode) */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="min-h-screen relative overflow-x-hidden pt-8 pb-20 px-4 md:px-8">
@@ -133,13 +139,22 @@
             
             <!-- KOLOM KIRI: Form Input -->
             <div class="lg:col-span-4">
-                <div class="glass-card rounded-[24px] p-6 sticky top-6 z-10">
+                <div class="glass-card rounded-[24px] p-6 sticky top-6 z-10" id="formContainer">
                     <header class="flex items-center space-x-2 border-b border-white/10 pb-4 mb-5">
-                        <i data-lucide="edit-3" class="w-5 h-5 text-[#00f2fe]"></i>
-                        <h2 class="text-lg font-bold">Input Pesanan</h2>
+                        <i data-lucide="edit-3" class="w-5 h-5 text-[#00f2fe]" id="formIcon"></i>
+                        <h2 class="text-lg font-bold" id="formTitle">Input Pesanan</h2>
                     </header>
 
                     <form id="orderForm" class="space-y-4">
+                        <!-- Input Tanggal Baru -->
+                        <div class="group relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500">
+                                <i data-lucide="calendar" class="w-4 h-4"></i>
+                            </span>
+                            <input type="date" id="tanggalOrder" required 
+                                class="w-full bg-[#1c1c1e] border border-[#2c2c2e] rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500/50 transition-all duration-300 [color-scheme:dark]">
+                        </div>
+                        
                         <div class="group">
                             <input type="text" id="noPesanan" required placeholder="Kode / Nomor Pesanan" 
                                 class="w-full bg-[#1c1c1e] border border-[#2c2c2e] rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500/50 transition-all duration-300">
@@ -165,6 +180,7 @@
                                 <img id="imagePreview" class="w-full h-full object-cover">
                                 <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                                     <i data-lucide="trash-2" class="w-5 h-5 text-red-400 mb-1"></i>
+                                    <p class="text-[10px] text-white mt-1">Ganti Foto</p>
                                 </div>
                             </div>
                             <div id="uploadContent" class="text-center group-hover:scale-105 transition-transform duration-300 pointer-events-none">
@@ -173,13 +189,22 @@
                             </div>
                         </div>
 
-                        <button type="submit" id="btnSubmit" class="w-full relative group overflow-hidden rounded-xl mt-4">
-                            <div class="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-orange-500 hover:from-pink-600 hover:via-purple-600 hover:to-orange-600 transition-colors duration-300"></div>
-                            <div class="relative py-3 flex items-center justify-center space-x-2 transform transition-transform group-active:scale-[0.98]">
-                                <i data-lucide="check" class="w-5 h-5 text-white font-bold" id="btnIcon"></i>
-                                <span class="text-white font-bold text-sm tracking-wide" id="btnText">Simpan Pesanan</span>
-                            </div>
-                        </button>
+                        <!-- Buttons Row -->
+                        <div class="flex gap-3 mt-4">
+                            <!-- Tombol Batal Edit (Hidden by default) -->
+                            <button type="button" id="btnCancelEdit" class="hidden w-1/3 py-3 bg-[#2c2c2e] hover:bg-[#3c3c3e] text-white rounded-xl text-sm font-bold transition-colors">
+                                Batal
+                            </button>
+                            
+                            <!-- Tombol Simpan / Update -->
+                            <button type="submit" id="btnSubmit" class="flex-1 relative group overflow-hidden rounded-xl">
+                                <div class="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-orange-500 hover:from-pink-600 hover:via-purple-600 hover:to-orange-600 transition-colors duration-300"></div>
+                                <div class="relative py-3 flex items-center justify-center space-x-2 transform transition-transform group-active:scale-[0.98]">
+                                    <i data-lucide="check" class="w-5 h-5 text-white font-bold" id="btnIcon"></i>
+                                    <span class="text-white font-bold text-sm tracking-wide" id="btnText">Simpan Pesanan</span>
+                                </div>
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -210,18 +235,18 @@
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-[#1c1c1e] border border-green-500/30 text-white px-5 py-3 rounded-full shadow-2xl shadow-green-500/10 flex items-center space-x-3 transition-all duration-500 translate-y-[-150%] opacity-0 z-50 backdrop-blur-md">
-        <div class="bg-green-500/20 p-1 rounded-full text-green-400">
-            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+    <div id="toast" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-[#1c1c1e] border border-[#2c2c2e] text-white px-5 py-3 rounded-full shadow-2xl flex items-center space-x-3 transition-all duration-500 translate-y-[-150%] opacity-0 z-50 backdrop-blur-md">
+        <div class="bg-green-500/20 p-1.5 rounded-full text-green-400" id="toastIconContainer">
+            <i data-lucide="check-circle-2" class="w-5 h-5" id="toastIcon"></i>
         </div>
-        <span class="text-sm font-medium">Orderan berhasil disimpan!</span>
+        <span class="text-sm font-medium" id="toastMessage">Berhasil disimpan!</span>
     </div>
 
     <!-- SCRIPT FIREBASE & LOGIKA -->
     <script type="module">
-        // 1. IMPORT FIREBASE SDK MODULES
+        // 1. IMPORT FIREBASE SDK MODULES (Menambahkan doc dan updateDoc)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // 2. FIREBASE CONFIGURATION DARI ANDA
         const firebaseConfig = {
@@ -234,7 +259,6 @@
             measurementId: "G-E6WLEXQF4X"
         };
 
-        // Initialize Firebase & Firestore
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const orderanCollection = collection(db, "orderan_instagram");
@@ -242,7 +266,7 @@
         // UI Initialization
         lucide.createIcons();
 
-        // Variabel UI Form
+        // Variabel UI Form & Global State
         const orderForm = document.getElementById('orderForm');
         const hargaInput = document.getElementById('harga');
         const dropzone = document.getElementById('dropzone');
@@ -253,33 +277,41 @@
         const riwayatList = document.getElementById('riwayatList');
         const emptyState = document.getElementById('emptyState');
         const loadingState = document.getElementById('loadingState');
+        const tanggalInput = document.getElementById('tanggalOrder');
+        
+        // Mode Edit Variables
         let selectedFileBase64 = null; 
+        let globalDataOrderan = []; // Simpan data di local memory untuk dipanggil saat Edit
+        let currentEditId = null;   // Menyimpan ID Document Firestore yang sedang di-edit
 
-        // 3. LISTEN REALTIME DATA FIREBASE (onSnapshot)
+        // Set default Tanggal ke hari ini
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            tanggalInput.value = today;
+        }
+        setDefaultDate(); // Panggil saat pertama kali load
+
+        // 3. LISTEN REALTIME DATA FIREBASE
         onSnapshot(orderanCollection, (snapshot) => {
-            loadingState.style.display = 'none'; // Sembunyikan loading
-            
-            let dataOrderan = [];
+            loadingState.style.display = 'none'; 
+            globalDataOrderan = [];
             let totalOmzet = 0;
 
-            // Ambil semua dokumen
             snapshot.forEach((doc) => {
                 const data = doc.data();
-                dataOrderan.push({ id_doc: doc.id, ...data });
+                globalDataOrderan.push({ id_doc: doc.id, ...data });
                 totalOmzet += data.harga;
             });
 
-            // Urutkan dari yang terbaru (berdasarkan timestamp)
-            dataOrderan.sort((a, b) => b.timestamp - a.timestamp);
+            // Urutkan (Paling baru di atas)
+            globalDataOrderan.sort((a, b) => b.timestamp - a.timestamp);
 
-            // Update UI Summary
-            document.getElementById('summaryTotalPesanan').innerText = dataOrderan.length;
+            // Update Summary
+            document.getElementById('summaryTotalPesanan').innerText = globalDataOrderan.length;
             document.getElementById('summaryTotalOmzet').innerText = formatRupiahFinal(totalOmzet);
 
-            // Tampilkan state kosong jika tidak ada data
-            if (dataOrderan.length === 0) {
+            if (globalDataOrderan.length === 0) {
                 emptyState.style.display = 'flex';
-                // Hapus semua elemen selain empty/loading state
                 Array.from(riwayatList.children).forEach(child => {
                     if (child.id !== 'emptyState' && child.id !== 'loadingState') child.remove();
                 });
@@ -288,18 +320,28 @@
                 emptyState.style.display = 'none';
             }
 
-            // Render Ulang List
-            // Bersihkan list lama (kecuali empty/loading state)
+            // Bersihkan list (kecuali empty state)
             Array.from(riwayatList.children).forEach(child => {
                 if (child.id !== 'emptyState' && child.id !== 'loadingState') child.remove();
             });
 
-            // Render list baru
-            dataOrderan.forEach(order => {
+            // Render list dengan tombol EDIT
+            globalDataOrderan.forEach(order => {
+                // Format tanggal untuk tampilan (contoh: 2026-05-29 jadi 29 Mei 2026)
+                let textTanggal = order.tanggal;
+                if(textTanggal) {
+                    const dateObj = new Date(textTanggal);
+                    const months = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+                    textTanggal = `${dateObj.getDate()} ${months[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+                } else {
+                    textTanggal = "-";
+                }
+
                 const itemHTML = `
                     <div class="bg-[#1c1c1e] border border-[#2c2c2e] p-4 rounded-2xl flex items-center gap-4 relative overflow-hidden group hover:border-pink-500/50 transition-colors">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-pink-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         
+                        <!-- Gambar -->
                         <div class="w-14 h-14 bg-[#2c2c2e] rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center border border-white/5">
                             ${order.gambar 
                                 ? `<img src="${order.gambar}" class="w-full h-full object-cover">` 
@@ -307,23 +349,29 @@
                             }
                         </div>
                         
+                        <!-- Info Order -->
                         <div class="flex-1 min-w-0">
-                            <h3 class="font-bold text-white text-sm md:text-base truncate">${order.nama}</h3>
+                            <h3 class="font-bold text-white text-sm md:text-base truncate pr-8">${order.nama}</h3>
                             <p class="text-xs text-[#00f2fe] font-medium mt-0.5 truncate"># ${order.id}</p>
-                            <div class="flex items-center gap-3 mt-1.5">
-                                <div class="flex items-center gap-1 text-xs text-neutral-400">
+                            <div class="flex items-center gap-3 mt-1.5 flex-wrap">
+                                <div class="flex items-center gap-1 text-[11px] md:text-xs text-neutral-400">
                                     <i data-lucide="package" class="w-3.5 h-3.5"></i>
-                                    <span class="truncate max-w-[100px] md:max-w-[150px]">${order.produk}</span>
+                                    <span class="truncate max-w-[90px] md:max-w-[130px]">${order.produk}</span>
                                 </div>
                                 <div class="flex items-center gap-1 text-[11px] text-neutral-500">
-                                    <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-                                    <span>${order.waktu}</span>
+                                    <i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i>
+                                    <span>${textTanggal} • ${order.waktu}</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="text-right flex-shrink-0 pl-2">
+                        <!-- Harga & Tombol Edit -->
+                        <div class="text-right flex-shrink-0 pl-2 flex flex-col items-end justify-center gap-1.5">
                             <span class="font-bold text-white text-sm md:text-base">${formatRupiahFinal(order.harga)}</span>
+                            <!-- Tombol Edit (Icon Pulpen) -->
+                            <button class="btn-edit text-neutral-400 hover:text-pink-500 hover:bg-pink-500/10 p-1.5 rounded-lg transition-all" data-id="${order.id_doc}" title="Edit Orderan">
+                                <i data-lucide="pen-line" class="w-4 h-4 pointer-events-none"></i>
+                            </button>
                         </div>
                     </div>
                 `;
@@ -336,8 +384,80 @@
             loadingState.innerHTML = `<p class="text-red-400 text-sm">Gagal terhubung ke Database.<br>Pastikan Firestore Rules Anda mengizinkan read/write.</p>`;
         });
 
+        // 4. EVENT DELEGATION UNTUK TOMBOL EDIT DI LIST
+        riwayatList.addEventListener('click', (e) => {
+            const btnEdit = e.target.closest('.btn-edit');
+            if (btnEdit) {
+                const docId = btnEdit.getAttribute('data-id');
+                const orderData = globalDataOrderan.find(o => o.id_doc === docId);
+                if (orderData) {
+                    masukModeEdit(orderData);
+                }
+            }
+        });
 
-        // 4. FORMAT RUPIAH
+        // Fungsi Memasukkan Data ke Form untuk Diubah (Mode Edit)
+        function masukModeEdit(data) {
+            currentEditId = data.id_doc;
+            
+            // Isi Form dengan data lama
+            document.getElementById('noPesanan').value = data.id;
+            document.getElementById('namaKonsumen').value = data.nama;
+            document.getElementById('namaProduk').value = data.produk;
+            document.getElementById('harga').value = formatRibuan(data.harga.toString());
+            tanggalInput.value = data.tanggal || new Date().toISOString().split('T')[0];
+
+            // Isi Gambar jika ada
+            if (data.gambar) {
+                selectedFileBase64 = data.gambar;
+                imagePreview.src = data.gambar;
+                previewContainer.classList.remove('hidden');
+                uploadContent.classList.add('hidden');
+            } else {
+                resetImage();
+            }
+
+            // Ubah Tampilan UI Form
+            document.getElementById('formTitle').innerText = "Edit Pesanan";
+            document.getElementById('formTitle').classList.add('text-pink-500');
+            document.getElementById('formIcon').setAttribute('data-lucide', 'pen-tool');
+            document.getElementById('formIcon').classList.replace('text-[#00f2fe]', 'text-pink-500');
+            
+            document.getElementById('btnText').innerText = "Update Pesanan";
+            document.getElementById('btnIcon').setAttribute('data-lucide', 'refresh-cw');
+            document.getElementById('btnCancelEdit').classList.remove('hidden');
+            document.getElementById('btnCancelEdit').classList.add('block');
+            
+            lucide.createIcons();
+
+            // Scroll mulus ke atas form
+            document.getElementById('formContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Tombol Batal Edit
+        document.getElementById('btnCancelEdit').addEventListener('click', keluarModeEdit);
+
+        function keluarModeEdit() {
+            currentEditId = null;
+            orderForm.reset();
+            resetImage();
+            setDefaultDate(); // Kembalikan ke tanggal hari ini
+
+            // Kembalikan Tampilan UI Form ke Normal
+            document.getElementById('formTitle').innerText = "Input Pesanan";
+            document.getElementById('formTitle').classList.remove('text-pink-500');
+            document.getElementById('formIcon').setAttribute('data-lucide', 'edit-3');
+            document.getElementById('formIcon').classList.replace('text-pink-500', 'text-[#00f2fe]');
+            
+            document.getElementById('btnText').innerText = "Simpan Pesanan";
+            document.getElementById('btnIcon').setAttribute('data-lucide', 'check');
+            document.getElementById('btnCancelEdit').classList.add('hidden');
+            document.getElementById('btnCancelEdit').classList.remove('block');
+            
+            lucide.createIcons();
+        }
+
+        // 5. FORMAT RUPIAH
         hargaInput.addEventListener('input', function(e) {
             let value = this.value.replace(/[^,\d]/g, '').toString();
             this.value = formatRibuan(value);
@@ -359,16 +479,9 @@
             return "Rp " + angka.toLocaleString('id-ID');
         }
 
-        // 5. FITUR GAMBAR (Drag, Drop, Paste, Compress)
-        dropzone.addEventListener('click', () => {
-            if (selectedFileBase64) resetImage();
-            else fileInput.click();
-        });
-
-        fileInput.addEventListener('change', function() {
-            if (this.files && this.files[0]) processAndCompressImage(this.files[0]);
-        });
-
+        // 6. FITUR GAMBAR
+        dropzone.addEventListener('click', () => { fileInput.click(); });
+        fileInput.addEventListener('change', function() { if (this.files && this.files[0]) processAndCompressImage(this.files[0]); });
         dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-pink-500', 'bg-[#1c1c1e]/80'); });
         dropzone.addEventListener('dragleave', () => { dropzone.classList.remove('border-pink-500', 'bg-[#1c1c1e]/80'); });
         dropzone.addEventListener('drop', (e) => {
@@ -376,7 +489,6 @@
             dropzone.classList.remove('border-pink-500', 'bg-[#1c1c1e]/80');
             if (e.dataTransfer.files && e.dataTransfer.files[0]) processAndCompressImage(e.dataTransfer.files[0]);
         });
-
         document.addEventListener('paste', (e) => {
             const items = (e.clipboardData || e.originalEvent.clipboardData).items;
             for (let index in items) {
@@ -387,7 +499,6 @@
             }
         });
 
-        // Resize gambar sebelum diubah ke base64 agar tidak melanggar limit 1MB Firestore
         function processAndCompressImage(file) {
             if (!file.type.startsWith('image/')) return;
             const reader = new FileReader();
@@ -395,18 +506,14 @@
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 500; // Kompres ukuran agar ringan di database
+                    const MAX_WIDTH = 500; 
                     const scaleSize = MAX_WIDTH / img.width;
-                    
                     canvas.width = MAX_WIDTH;
                     canvas.height = img.height * scaleSize;
-                    
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                     
-                    // Convert ke JPEG kualitas 70%
                     selectedFileBase64 = canvas.toDataURL('image/jpeg', 0.7); 
-                    
                     imagePreview.src = selectedFileBase64;
                     previewContainer.classList.remove('hidden');
                     uploadContent.classList.add('hidden');
@@ -424,7 +531,7 @@
             uploadContent.classList.remove('hidden');
         }
 
-        // 6. SIMPAN DATA KE FIREBASE
+        // 7. SIMPAN / UPDATE DATA KE FIREBASE
         function getCurrentTime() {
             const now = new Date();
             return `${now.getHours().toString().padStart(2, '0')}.${now.getMinutes().toString().padStart(2, '0')}`;
@@ -436,8 +543,8 @@
             const btnText = document.getElementById('btnText');
             const btnIcon = document.getElementById('btnIcon');
             
-            // State Loading Button
-            btnText.innerText = "Menyimpan ke Database...";
+            // Loading State Tombol
+            btnText.innerText = currentEditId ? "Mengupdate..." : "Menyimpan...";
             btnIcon.setAttribute('data-lucide', 'loader-2');
             btnIcon.classList.add('animate-spin');
             lucide.createIcons();
@@ -445,40 +552,57 @@
             const hargaMentah = parseInt(document.getElementById('harga').value.replace(/\./g, ''));
             
             // Payload Data Firestore
-            const newOrder = {
+            const payload = {
                 id: document.getElementById('noPesanan').value,
                 nama: document.getElementById('namaKonsumen').value,
                 produk: document.getElementById('namaProduk').value,
                 harga: hargaMentah,
-                waktu: getCurrentTime(),
-                timestamp: Date.now(), // Digunakan untuk sorting descending
+                tanggal: tanggalInput.value, // Tambahan field tanggal
                 gambar: selectedFileBase64 || null
             };
 
             try {
-                // Insert ke Firestore
-                await addDoc(orderanCollection, newOrder);
-                
-                // Reset UI
-                orderForm.reset();
-                resetImage();
-                showToast();
+                if (currentEditId) {
+                    // Update ke Firestore (Dokumen yang sudah ada)
+                    const docRef = doc(db, "orderan_instagram", currentEditId);
+                    await updateDoc(docRef, payload); // Hanya update field tertentu, biarkan waktu asli tetap
+                    showToast("Pesanan berhasil diupdate!", "refresh-ccw", "text-blue-400");
+                    keluarModeEdit(); // Reset form kembali ke mode input baru
+                } else {
+                    // Tambah Baru ke Firestore
+                    payload.waktu = getCurrentTime();
+                    payload.timestamp = Date.now();
+                    await addDoc(orderanCollection, payload);
+                    orderForm.reset();
+                    resetImage();
+                    setDefaultDate();
+                    showToast("Orderan berhasil disimpan!", "check-circle-2", "text-green-400");
+                }
 
             } catch (error) {
                 console.error("Gagal menyimpan:", error);
-                alert("Gagal menyimpan ke Firebase. Cek console log & Firestore Rules.");
-            } finally {
-                // Kembalikan tombol ke semula
-                btnText.innerText = "Simpan Pesanan";
-                btnIcon.setAttribute('data-lucide', 'check');
+                alert("Gagal menyimpan ke Firebase. Cek koneksi & aturan Rules Firestore.");
+                // Kembalikan icon/text normal jika error
+                btnText.innerText = currentEditId ? "Update Pesanan" : "Simpan Pesanan";
+                btnIcon.setAttribute('data-lucide', currentEditId ? 'refresh-cw' : 'check');
                 btnIcon.classList.remove('animate-spin');
                 lucide.createIcons();
             }
         });
 
-        // 7. TOAST ANIMATION
-        function showToast() {
+        // 8. TOAST ANIMATION
+        function showToast(message, iconName, colorClass) {
             const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = message;
+            
+            const iconEl = document.getElementById('toastIcon');
+            iconEl.setAttribute('data-lucide', iconName);
+            
+            const iconContainer = document.getElementById('toastIconContainer');
+            iconContainer.className = `p-1.5 rounded-full ${colorClass} bg-white/10`; // Reset class warna
+
+            lucide.createIcons();
+
             toast.classList.remove('translate-y-[-150%]', 'opacity-0');
             toast.classList.add('translate-y-0', 'opacity-100');
             
