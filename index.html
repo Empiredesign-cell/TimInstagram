@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Orderan - IG Style Dashboard</title>
+    <!-- Tailwind CSS untuk Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+        }
+
+        /* Background Blobs */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob { animation: blob 10s infinite alternate; }
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+
+        /* Glassmorphism Effect */
+        .glass-card {
+            background: rgba(23, 23, 23, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        /* Animasi Text Gradasi Bergerak */
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animate-gradient-text {
+            background-size: 200% auto;
+            animation: gradientShift 3s linear infinite;
+        }
+
+        /* Animasi Logo Melayang */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Border Gradient untuk Stats Card */
+        .border-gradient-ig {
+            position: relative;
+            background: #111;
+            border-radius: 16px;
+        }
+        .border-gradient-ig::before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            border-radius: 18px;
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            z-index: -1;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+        .border-gradient-ig:hover::before {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative overflow-x-hidden pt-8 pb-20 px-4 md:px-8">
+
+    <!-- Efek Cahaya Bergerak di Background -->
+    <div class="fixed top-0 left-0 w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob pointer-events-none z-0"></div>
+    <div class="fixed top-40 right-20 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob animation-delay-2000 pointer-events-none z-0"></div>
+
+    <!-- Container Utama Dashboard -->
+    <div class="max-w-6xl mx-auto relative z-10">
+        
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <div class="flex justify-center items-center gap-4 mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="w-12 h-12 md:w-14 md:h-14 animate-float filter drop-shadow-lg drop-shadow-pink-500/50">
+                    <defs>
+                        <linearGradient id="ig-grad" x1="10%" y1="90%" x2="90%" y2="10%">
+                            <stop stop-color="#f09433" offset="0%"></stop>
+                            <stop stop-color="#e6683c" offset="25%"></stop>
+                            <stop stop-color="#dc2743" offset="50%"></stop>
+                            <stop stop-color="#cc2366" offset="75%"></stop>
+                            <stop stop-color="#bc1888" offset="100%"></stop>
+                        </linearGradient>
+                    </defs>
+                    <path fill="url(#ig-grad)" d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/>
+                </svg>
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#f09433] via-[#dc2743] to-[#bc1888] animate-gradient-text pb-1">
+                    Recap Orderan
+                </h1>
+            </div>
+            <p class="text-neutral-400 text-sm md:text-base font-medium">Catat closingan Instagram dengan asik & interaktif</p>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="border-gradient-ig p-6 flex flex-col items-center justify-center text-center group">
+                <p class="text-neutral-400 text-sm mb-1 group-hover:text-white transition-colors">Total Pesanan</p>
+                <h2 id="summaryTotalPesanan" class="text-4xl font-bold text-white transition-all transform group-hover:scale-110">0</h2>
+            </div>
+            <div class="border-gradient-ig p-6 flex flex-col items-center justify-center text-center group">
+                <p class="text-neutral-400 text-sm mb-1 group-hover:text-white transition-colors">Total Omzet</p>
+                <h2 id="summaryTotalOmzet" class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 transition-all transform group-hover:scale-105">Rp 0</h2>
+            </div>
+        </div>
+
+        <!-- Layout 2 Kolom -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- KOLOM KIRI: Form Input -->
+            <div class="lg:col-span-4">
+                <div class="glass-card rounded-[24px] p-6 sticky top-6 z-10">
+                    <header class="flex items-center space-x-2 border-b border-white/10 pb-4 mb-5">
+                        <i data-lucide="edit-3" class="w-5 h-5 text-[#00f2fe]"></i>
+                        <h2 class="text-lg font-bold">Input Pesanan</h2>
+                    </header>
+
+                    <form id="orderForm" class="space-y-4">
+                        <div class="group">
+                            <input type="text" id="noPesanan" required placeholder="Kode / Nomor Pesanan" 
+                                class="w-full bg-[#1c1c1e] border border-[#2c2c2e] rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500/50 transition-all duration-300">
+                        </div>
+                        <div class="group">
+                            <input type="text" id="namaKonsumen" required placeholder="Nama Pembeli" 
+                                class="w-full bg-[#1c1c1e] border border-[#2c2c2e] rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500/50 transition-all duration-300">
+                        </div>
+                        <div class="group">
+                            <input type="text" id="namaProduk" required placeholder="Nama Produk" 
+                                class="w-full bg-[#1c1c1e] border border-[#2c2c2e] rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500/50 transition-all duration-300">
+                        </div>
+                        <div class="group relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 text-sm font-medium">Rp</span>
+                            <input type="text" id="harga" required placeholder="Harga" 
+                                class="w-full bg-[#1c1c1e] border border-[#2c2c2e] rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500/50 transition-all duration-300">
+                        </div>
+
+                        <!-- Dropzone -->
+                        <div id="dropzone" class="border-2 border-dashed border-[#2c2c2e] rounded-[18px] h-28 flex flex-col items-center justify-center cursor-pointer hover:border-pink-500 hover:bg-[#1c1c1e]/50 transition-all duration-300 group relative overflow-hidden bg-[#1c1c1e]/30">
+                            <input type="file" id="fileInput" class="hidden" accept="image/*">
+                            <div id="previewContainer" class="hidden absolute inset-0 w-full h-full">
+                                <img id="imagePreview" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                    <i data-lucide="trash-2" class="w-5 h-5 text-red-400 mb-1"></i>
+                                </div>
+                            </div>
+                            <div id="uploadContent" class="text-center group-hover:scale-105 transition-transform duration-300 pointer-events-none">
+                                <i data-lucide="image" class="w-6 h-6 text-neutral-500 mx-auto mb-1 group-hover:text-pink-400 transition-colors"></i>
+                                <p class="text-[0.75rem] text-neutral-400">Klik atau Paste (Ctrl+V)</p>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btnSubmit" class="w-full relative group overflow-hidden rounded-xl mt-4">
+                            <div class="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-500 to-orange-500 hover:from-pink-600 hover:via-purple-600 hover:to-orange-600 transition-colors duration-300"></div>
+                            <div class="relative py-3 flex items-center justify-center space-x-2 transform transition-transform group-active:scale-[0.98]">
+                                <i data-lucide="check" class="w-5 h-5 text-white font-bold" id="btnIcon"></i>
+                                <span class="text-white font-bold text-sm tracking-wide" id="btnText">Simpan Pesanan</span>
+                            </div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- KOLOM KANAN: Riwayat Masuk -->
+            <div class="lg:col-span-8 z-10">
+                <div class="glass-card rounded-[24px] p-6 min-h-[500px]">
+                    <header class="flex items-center space-x-2 border-b border-white/10 pb-4 mb-5">
+                        <i data-lucide="history" class="w-5 h-5 text-pink-500"></i>
+                        <h2 class="text-lg font-bold">Riwayat Masuk</h2>
+                    </header>
+
+                    <!-- Tempat List Pesanan -->
+                    <div id="riwayatList" class="space-y-4">
+                        <div id="loadingState" class="flex flex-col items-center justify-center py-16 text-center opacity-70">
+                            <i data-lucide="loader-2" class="w-10 h-10 text-pink-500 animate-spin mb-3"></i>
+                            <p class="text-neutral-400 text-sm">Memuat data dari Firebase...</p>
+                        </div>
+                        <div id="emptyState" class="hidden flex-col items-center justify-center py-16 text-center opacity-50">
+                            <i data-lucide="inbox" class="w-16 h-16 text-neutral-500 mb-3"></i>
+                            <p class="text-neutral-400">Belum ada orderan masuk.<br>Ayo input closingan pertamamu!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-[#1c1c1e] border border-green-500/30 text-white px-5 py-3 rounded-full shadow-2xl shadow-green-500/10 flex items-center space-x-3 transition-all duration-500 translate-y-[-150%] opacity-0 z-50 backdrop-blur-md">
+        <div class="bg-green-500/20 p-1 rounded-full text-green-400">
+            <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+        </div>
+        <span class="text-sm font-medium">Orderan berhasil disimpan!</span>
+    </div>
+
+    <!-- SCRIPT FIREBASE & LOGIKA -->
+    <script type="module">
+        // 1. IMPORT FIREBASE SDK MODULES
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // 2. FIREBASE CONFIGURATION DARI ANDA
+        const firebaseConfig = {
+            apiKey: "AIzaSyBGdRtj5YEhZidvLq-Ml7gmh_EhVKC3kbQ",
+            authDomain: "timinstagram-1c531.firebaseapp.com",
+            projectId: "timinstagram-1c531",
+            storageBucket: "timinstagram-1c531.firebasestorage.app",
+            messagingSenderId: "489336562500",
+            appId: "1:489336562500:web:8f95a86450a50e9c182d11",
+            measurementId: "G-E6WLEXQF4X"
+        };
+
+        // Initialize Firebase & Firestore
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const orderanCollection = collection(db, "orderan_instagram");
+
+        // UI Initialization
+        lucide.createIcons();
+
+        // Variabel UI Form
+        const orderForm = document.getElementById('orderForm');
+        const hargaInput = document.getElementById('harga');
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadContent = document.getElementById('uploadContent');
+        const riwayatList = document.getElementById('riwayatList');
+        const emptyState = document.getElementById('emptyState');
+        const loadingState = document.getElementById('loadingState');
+        let selectedFileBase64 = null; 
+
+        // 3. LISTEN REALTIME DATA FIREBASE (onSnapshot)
+        onSnapshot(orderanCollection, (snapshot) => {
+            loadingState.style.display = 'none'; // Sembunyikan loading
+            
+            let dataOrderan = [];
+            let totalOmzet = 0;
+
+            // Ambil semua dokumen
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                dataOrderan.push({ id_doc: doc.id, ...data });
+                totalOmzet += data.harga;
+            });
+
+            // Urutkan dari yang terbaru (berdasarkan timestamp)
+            dataOrderan.sort((a, b) => b.timestamp - a.timestamp);
+
+            // Update UI Summary
+            document.getElementById('summaryTotalPesanan').innerText = dataOrderan.length;
+            document.getElementById('summaryTotalOmzet').innerText = formatRupiahFinal(totalOmzet);
+
+            // Tampilkan state kosong jika tidak ada data
+            if (dataOrderan.length === 0) {
+                emptyState.style.display = 'flex';
+                // Hapus semua elemen selain empty/loading state
+                Array.from(riwayatList.children).forEach(child => {
+                    if (child.id !== 'emptyState' && child.id !== 'loadingState') child.remove();
+                });
+                return;
+            } else {
+                emptyState.style.display = 'none';
+            }
+
+            // Render Ulang List
+            // Bersihkan list lama (kecuali empty/loading state)
+            Array.from(riwayatList.children).forEach(child => {
+                if (child.id !== 'emptyState' && child.id !== 'loadingState') child.remove();
+            });
+
+            // Render list baru
+            dataOrderan.forEach(order => {
+                const itemHTML = `
+                    <div class="bg-[#1c1c1e] border border-[#2c2c2e] p-4 rounded-2xl flex items-center gap-4 relative overflow-hidden group hover:border-pink-500/50 transition-colors">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-pink-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        
+                        <div class="w-14 h-14 bg-[#2c2c2e] rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center border border-white/5">
+                            ${order.gambar 
+                                ? `<img src="${order.gambar}" class="w-full h-full object-cover">` 
+                                : `<i data-lucide="image" class="w-5 h-5 text-neutral-600"></i>`
+                            }
+                        </div>
+                        
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-bold text-white text-sm md:text-base truncate">${order.nama}</h3>
+                            <p class="text-xs text-[#00f2fe] font-medium mt-0.5 truncate"># ${order.id}</p>
+                            <div class="flex items-center gap-3 mt-1.5">
+                                <div class="flex items-center gap-1 text-xs text-neutral-400">
+                                    <i data-lucide="package" class="w-3.5 h-3.5"></i>
+                                    <span class="truncate max-w-[100px] md:max-w-[150px]">${order.produk}</span>
+                                </div>
+                                <div class="flex items-center gap-1 text-[11px] text-neutral-500">
+                                    <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                                    <span>${order.waktu}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-right flex-shrink-0 pl-2">
+                            <span class="font-bold text-white text-sm md:text-base">${formatRupiahFinal(order.harga)}</span>
+                        </div>
+                    </div>
+                `;
+                riwayatList.insertAdjacentHTML('beforeend', itemHTML);
+            });
+            
+            lucide.createIcons();
+        }, (error) => {
+            console.error("Error mengambil data dari Firebase:", error);
+            loadingState.innerHTML = `<p class="text-red-400 text-sm">Gagal terhubung ke Database.<br>Pastikan Firestore Rules Anda mengizinkan read/write.</p>`;
+        });
+
+
+        // 4. FORMAT RUPIAH
+        hargaInput.addEventListener('input', function(e) {
+            let value = this.value.replace(/[^,\d]/g, '').toString();
+            this.value = formatRibuan(value);
+        });
+
+        function formatRibuan(angka) {
+            let split = angka.split(',');
+            let sisa = split[0].length % 3;
+            let rupiah = split[0].substr(0, sisa);
+            let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+            if (ribuan) {
+                let separator = sisa ? '.' : '';
+                rupiah += separator + ribuan.join('.');
+            }
+            return split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        }
+
+        function formatRupiahFinal(angka) {
+            return "Rp " + angka.toLocaleString('id-ID');
+        }
+
+        // 5. FITUR GAMBAR (Drag, Drop, Paste, Compress)
+        dropzone.addEventListener('click', () => {
+            if (selectedFileBase64) resetImage();
+            else fileInput.click();
+        });
+
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) processAndCompressImage(this.files[0]);
+        });
+
+        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-pink-500', 'bg-[#1c1c1e]/80'); });
+        dropzone.addEventListener('dragleave', () => { dropzone.classList.remove('border-pink-500', 'bg-[#1c1c1e]/80'); });
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('border-pink-500', 'bg-[#1c1c1e]/80');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) processAndCompressImage(e.dataTransfer.files[0]);
+        });
+
+        document.addEventListener('paste', (e) => {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let index in items) {
+                const item = items[index];
+                if (item.kind === 'file' && item.type.includes('image')) {
+                    processAndCompressImage(item.getAsFile());
+                }
+            }
+        });
+
+        // Resize gambar sebelum diubah ke base64 agar tidak melanggar limit 1MB Firestore
+        function processAndCompressImage(file) {
+            if (!file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 500; // Kompres ukuran agar ringan di database
+                    const scaleSize = MAX_WIDTH / img.width;
+                    
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    // Convert ke JPEG kualitas 70%
+                    selectedFileBase64 = canvas.toDataURL('image/jpeg', 0.7); 
+                    
+                    imagePreview.src = selectedFileBase64;
+                    previewContainer.classList.remove('hidden');
+                    uploadContent.classList.add('hidden');
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function resetImage() {
+            selectedFileBase64 = null;
+            fileInput.value = '';
+            imagePreview.src = '';
+            previewContainer.classList.add('hidden');
+            uploadContent.classList.remove('hidden');
+        }
+
+        // 6. SIMPAN DATA KE FIREBASE
+        function getCurrentTime() {
+            const now = new Date();
+            return `${now.getHours().toString().padStart(2, '0')}.${now.getMinutes().toString().padStart(2, '0')}`;
+        }
+
+        orderForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btnText = document.getElementById('btnText');
+            const btnIcon = document.getElementById('btnIcon');
+            
+            // State Loading Button
+            btnText.innerText = "Menyimpan ke Database...";
+            btnIcon.setAttribute('data-lucide', 'loader-2');
+            btnIcon.classList.add('animate-spin');
+            lucide.createIcons();
+
+            const hargaMentah = parseInt(document.getElementById('harga').value.replace(/\./g, ''));
+            
+            // Payload Data Firestore
+            const newOrder = {
+                id: document.getElementById('noPesanan').value,
+                nama: document.getElementById('namaKonsumen').value,
+                produk: document.getElementById('namaProduk').value,
+                harga: hargaMentah,
+                waktu: getCurrentTime(),
+                timestamp: Date.now(), // Digunakan untuk sorting descending
+                gambar: selectedFileBase64 || null
+            };
+
+            try {
+                // Insert ke Firestore
+                await addDoc(orderanCollection, newOrder);
+                
+                // Reset UI
+                orderForm.reset();
+                resetImage();
+                showToast();
+
+            } catch (error) {
+                console.error("Gagal menyimpan:", error);
+                alert("Gagal menyimpan ke Firebase. Cek console log & Firestore Rules.");
+            } finally {
+                // Kembalikan tombol ke semula
+                btnText.innerText = "Simpan Pesanan";
+                btnIcon.setAttribute('data-lucide', 'check');
+                btnIcon.classList.remove('animate-spin');
+                lucide.createIcons();
+            }
+        });
+
+        // 7. TOAST ANIMATION
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-[-150%]', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-[-150%]', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
